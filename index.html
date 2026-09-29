@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario PaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold text-indigo-600 mb-2">Sistema de Inventario (Netlify PaaS)</h1>
+        <p class="text-sm text-gray-500 mb-6">Entorno activo: <span class="font-bold text-green-600">Producción Netlify</span></p>
+
+        <!-- Formulario -->
+        <form id="formInventario" class="grid grid-cols-1 md:grid-cols-4 gap-2 mb-6">
+            <input type="text" id="nombre" placeholder="Producto" required class="border p-2 rounded">
+            <input type="number" id="cantidad" placeholder="Cantidad" required class="border p-2 rounded">
+            <input type="number" step="0.01" id="precio" placeholder="Precio ($)" required class="border p-2 rounded">
+            <button type="submit" class="bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700">Agregar</button>
+        </form>
+
+        <!-- Tabla -->
+        <table class="w-full text-left border">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="p-2 border">ID</th>
+                    <th class="p-2 border">Producto</th>
+                    <th class="p-2 border">Cantidad</th>
+                    <th class="p-2 border">Precio</th>
+                    <th class="p-2 border">Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tablaCuerpo">
+                <!-- Se llena dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let inventario = [
+            { id: 1, nombre: "Laptop", cantidad: 5, precio: 650.00 },
+            { id: 2, nombre: "Mouse Inalámbrico", cantidad: 15, precio: 15.50 }
+        ];
+
+        function renderizar() {
+            const tbody = document.getElementById('tablaCuerpo');
+            tbody.innerHTML = '';
+            inventario.forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-2 border">${item.id}</td>
+                        <td class="p-2 border">${item.nombre}</td>
+                        <td class="p-2 border">${item.cantidad}</td>
+                        <td class="p-2 border">$${parseFloat(item.precio).toFixed(2)}</td>
+                        <td class="p-2 border text-center">
+                            <button onclick="eliminar(${item.id})" class="text-red-600 font-bold hover:underline">Eliminar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.getElementById('formInventario').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('nombre').value;
+            const cantidad = parseInt(document.getElementById('cantidad').value);
+            const precio = parseFloat(document.getElementById('precio').value);
+
+            const nuevoId = inventario.length > 0 ? inventario[inventario.length - 1].id + 1 : 1;
+            inventario.push({ id: nuevoId, nombre, cantidad, precio });
+
+            this.reset();
+            renderizar();
+        });
+
+        function eliminar(id) {
+            inventario = inventario.filter(item => item.id !== id);
+            renderizar();
+        }
+
+        renderizar();
+    </script>
+</body>
+</html>
